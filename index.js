@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const env = require('dotenv').config();
+const env = require('dotenv').config({debug: true});
 const mongoose = require('./connections/mongodb.connection');
 const PORT = process.env.PORT || 5000;
 
