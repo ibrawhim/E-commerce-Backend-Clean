@@ -6,7 +6,7 @@ const signupController = (req, res) => {
     form.save()
         .then(data => {
             console.log(data);
-                res.json(data);
+                res.json({message:"Signup Successful", data});
             })
         .catch(err => {
                 res.json(err);
