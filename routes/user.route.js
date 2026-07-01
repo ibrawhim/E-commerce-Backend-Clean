@@ -1,16 +1,13 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
+const { signupController, signinController } = require('../controllers/userInfos.controller');
 
-console.log("User routes loaded");
 
-router.post("/signup", (req, res) => {
-    console.log("Route reached");
-    console.log(req.body);
 
-    return res.json({
-        message: "Signup works",
-        body: req.body
-    });
-});
+router.post('/signup', signupController);
+router.post('/signin', signinController);
+
+
+
 
 module.exports = router;
