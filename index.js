@@ -22,6 +22,11 @@ app.use((req, res, next) => {
 
 app.use('/', userRoute);
 
+app.get("/ping", (req, res) => {
+    console.log("Ping received");
+    res.send("pong");
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
