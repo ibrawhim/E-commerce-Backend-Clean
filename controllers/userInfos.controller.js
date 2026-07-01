@@ -1,5 +1,5 @@
 const signupModel = require('../models/signup.model');
-const signinModel = require('../models/signin.model');
+
 
 const signupController = (req, res) => {
     let form = new signupModel(req.body);
@@ -15,7 +15,18 @@ const signupController = (req, res) => {
 };
 
 const signinController = (req, res) => {
-    console.log(req.body);
+    signinModel.findOne({email: req.body.email, password: req.body.password})
+        .then(data => {
+            if(data) {
+                res.json({message: "Signin Successful", data});
+            } else {
+                res.json({message: "Signin Failed"});
+            }
+        })
+        .catch(err => {
+            res.json(err);
+            console.log(err);
+        });
 };
 
 module.exports = {
