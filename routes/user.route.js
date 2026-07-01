@@ -5,7 +5,18 @@ const { signupController, signinController } = require('../controllers/userInfos
 
 
 
-router.post('/signup', signupController);
+// router.post('/signup', signupController);
+
+router.post("/signup", (req, res) => {
+    console.log("Signup route hit");
+    console.log(req.body);
+
+    res.json({
+        success: true,
+        body: req.body
+    });
+});
+
 router.post('/signin', signinController);
 
 
