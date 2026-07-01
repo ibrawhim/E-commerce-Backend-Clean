@@ -2,13 +2,13 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const signupSchema = new Schema({
-    firstname: {
+    firstName: {
         type: String,
         required: true,
         minlength: 3,
         maxlength: 50,
     },
-    lastname: {
+    lastName: {
         type: String,
         required: true,
         minlength: 3,
