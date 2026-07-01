@@ -1,3 +1,4 @@
+console.log("User routes loaded");
 const express = require('express');
 const router = express.Router();
 const { signupController, signinController } = require('../controllers/userInfos.controller');
