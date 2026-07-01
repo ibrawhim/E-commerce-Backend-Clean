@@ -15,7 +15,7 @@ const signupController = (req, res) => {
 };
 
 const signinController = (req, res) => {
-    signinModel.findOne({email: req.body.email, password: req.body.password})
+    signupModel.findOne({email: req.body.email, password: req.body.password})
         .then(data => {
             if(data) {
                 res.json({message: "Signin Successful", data});
