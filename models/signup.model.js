@@ -30,11 +30,10 @@ const signupSchema = new Schema({
     },
 });
 
-const signupModel = mongoose.model('signup', signupSchema);
 
 const saltRounds = 10;
 signupSchema.pre("save", async function () {
-  if (!this.isModified("password")) return;
+    if (!this.isModified("password")) return;
   try {
     const hashedPassword = await bcrypt.hash(this.password, saltRounds);
     this.password = hashedPassword;
@@ -44,13 +43,15 @@ signupSchema.pre("save", async function () {
 });
 
 signupSchema.methods.validatePassword = function (password, callback) {
-  bcrypt.compare(password, this.password,(err,same)=>{
-    if(!err){
-      callback(err,same);
+    bcrypt.compare(password, this.password,(err,same)=>{
+        if(!err){
+            callback(err,same);
     }else {
       next()
     }
-  });
+});
 };
+
+const signupModel = mongoose.model('signup', signupSchema);
 
 module.exports = signupModel;
