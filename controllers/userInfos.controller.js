@@ -15,18 +15,37 @@ const signupController = (req, res) => {
 };
 
 const signinController = (req, res) => {
-    signupModel.findOne({email: req.body.email, password: req.body.password})
-        .then(data => {
-            if(data) {
-                res.json({message: "Signin Successful", data});
-            } else {
-                res.json({message: "Signin Failed"});
-            }
-        })
-        .catch(err => {
-            res.json(err);
-            console.log(err);
+const { email, password } = req.body;
+  signupModel.findOne({email})
+  .then(user => {
+      if (!user) {
+        return res.send({
+          status: false,
+          message: "Email not found"
         });
+      }
+      user.validatePassword(password, (err, same) => {
+        if (err) {
+          return res.status(500).send(err);
+        }
+
+        if (!same) {
+          return res.send({
+            status: false,
+            message: "Invalid Password"
+          });
+        }
+
+        return res.send({
+          status: true,
+          message: "Login Successful"
+        });
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).send(err);
+    });
 };
 
 module.exports = {
