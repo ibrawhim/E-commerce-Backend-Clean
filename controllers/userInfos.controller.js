@@ -40,7 +40,7 @@ const { email, password } = req.body;
         }    
         const userData = user.toObject(); 
         delete userData.password;         
-        let token = jwt.sign({payload},secret,{expiresIn: '24h'})
+        let token = jwt.sign({email},secret,{expiresIn: '24h'})
         console.log(token)
         return res.send({
           status: true,
