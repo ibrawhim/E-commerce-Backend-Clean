@@ -40,14 +40,14 @@ const { email, password } = req.body;
         }    
         const userData = user.toObject(); 
         delete userData.password;         
-        
+        let token = jwt.sign({payload},secret,{expiresIn: '24h'})
+        console.log(token)
         return res.send({
           status: true,
           message: "Login Successful",
-          data: user
+          data: user,
+          token: token
         });
-        let token = jwt.sign({payload},secret,{expiresIn: '24h'})
-        console.log(token)
       });
     })
     .catch(err => {
