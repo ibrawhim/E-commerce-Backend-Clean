@@ -37,11 +37,12 @@ const { email, password } = req.body;
             status: false,
             message: "Invalid Password"
           });
-        }
-
+        }    
+     n 
         return res.send({
           status: true,
-          message: "Login Successful"
+          message: "Login Successful",
+          data: user
         });
         let token = jwt.sign({payload},secret,{expiresIn: '24h'})
         console.log(token)
