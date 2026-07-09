@@ -45,7 +45,7 @@ const { email, password } = req.body;
         return res.send({
           status: true,
           message: "Login Successful",
-          data: user,
+          data: userData,  
           token: token
         });
       });
