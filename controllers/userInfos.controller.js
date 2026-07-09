@@ -1,6 +1,6 @@
 const signupModel = require('../models/signup.model');
 const jwt = require('jsonwebtoken');
-const env = require('dotenv')
+const env = require('dotenv').config({quiet: true});
 
 const signupController = (req, res) => {
     let form = new signupModel(req.body);
