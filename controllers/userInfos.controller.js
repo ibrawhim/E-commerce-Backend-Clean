@@ -38,7 +38,9 @@ const { email, password } = req.body;
             message: "Invalid Password"
           });
         }    
-     
+        const userData = user.toObject(); 
+        delete userData.password;         
+        
         return res.send({
           status: true,
           message: "Login Successful",
