@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 const env = require('dotenv').config({quiet: true});
+console.log(env);
+console.log("SECRET =", process.env.SECRET);
 const mongoose = require('./connections/mongodb.connection');
 const PORT = process.env.PORT || 5000;
 const cors = require('cors');
