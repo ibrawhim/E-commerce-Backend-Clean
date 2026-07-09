@@ -1,5 +1,6 @@
 const signupModel = require('../models/signup.model');
-
+const jwt = require('jsonwebtoken');
+const env = require('dotenv')
 
 const signupController = (req, res) => {
     let form = new signupModel(req.body);
@@ -14,6 +15,7 @@ const signupController = (req, res) => {
             });
 };
 
+
 const signinController = (req, res) => {
 const { email, password } = req.body;
   signupModel.findOne({email})
@@ -24,6 +26,7 @@ const { email, password } = req.body;
           message: "Email not found"
         });
       }
+      let secret = process.env.SECRET;
       user.validatePassword(password, (err, same) => {
         if (err) {
           return res.status(500).send(err);
@@ -40,6 +43,8 @@ const { email, password } = req.body;
           status: true,
           message: "Login Successful"
         });
+        let token = jwt.sign({payload},secret,{expiresIn: '24h'})
+        console.log(token)
       });
     })
     .catch(err => {
