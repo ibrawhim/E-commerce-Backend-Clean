@@ -7,7 +7,7 @@ const { addToCart, getCart, removeFromCart, updateQuantity, clearCart } = requir
 
 router.post('/signup', signupController);
 router.post('/signin', signinController);
-router.get('/cart', getCart)
+router.get('/cart/:userId', getCart)
 router.post('/cart/addtocart', addToCart )
 router.post('/cart/remove', removeFromCart)
 router.post('/cart/update', updateQuantity)

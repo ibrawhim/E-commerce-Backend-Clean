@@ -58,15 +58,12 @@ const addToCart = async (req, res) => {
  * Get user's cart
  */
 const getCart = async (req, res) => {
-
     try {
-
         const { userId } = req.params;
 
         const cart = await Cart.findOne({ userId });
 
         if (!cart) {
-
             return res.status(200).json({
                 success: true,
                 cart: {
@@ -74,7 +71,6 @@ const getCart = async (req, res) => {
                     cartItems: []
                 }
             });
-
         }
 
         res.status(200).json({
@@ -83,16 +79,12 @@ const getCart = async (req, res) => {
         });
 
     } catch (err) {
-
         res.status(500).json({
             success: false,
             message: err.message
         });
-
     }
-
 };
-
 
 /**
  * Remove item from cart
