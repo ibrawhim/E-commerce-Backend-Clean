@@ -3,7 +3,12 @@ const Cart = require("../models/cart.model");
 // Add item to cart
 const addToCart = async (req, res) => {
     try {
+        console.log(req.body);
+
         const { userId, item } = req.body;
+
+        console.log("userId:", userId);
+        console.log("item:", item);
 
         let cart = await Cart.findOne({ userId });
 
@@ -23,6 +28,7 @@ const addToCart = async (req, res) => {
         });
 
     } catch (err) {
+        console.log(err);
         res.status(500).json({
             success: false,
             message: err.message,
