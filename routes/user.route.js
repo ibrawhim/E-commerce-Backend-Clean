@@ -1,19 +1,34 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { signupController, signinController } = require('../controllers/userInfos.controller');
-const { addToCart, getCart, removeFromCart, updateQuantity, clearCart } = require('../controllers/cart.controller');
 
+const {
+    signupController,
+    signinController
+} = require("../controllers/userInfos.controller");
 
+const {
+    addToCart,
+    getCart,
+    removeFromCart,
+    updateQuantity,
+    clearCart
+} = require("../controllers/cart.controller");
 
-router.post('/signup', signupController);
-router.post('/signin', signinController);
-router.get('/cart/:userId', getCart)
-router.post('/cart/addtocart', addToCart )
-router.post('/cart/remove', removeFromCart)
-router.post('/cart/update', updateQuantity)
-router.post('/cart/clear', clearCart)
+const verifyToken = require("../middlewares/auth.middleware");
 
+// Authentication
+router.post("/signup", signupController);
+router.post("/signin", signinController);
 
+// Cart
+router.get("/cart", verifyToken, getCart);
 
+router.post("/cart/addtocart", verifyToken, addToCart);
+
+router.post("/cart/remove", verifyToken, removeFromCart);
+
+router.post("/cart/update", verifyToken, updateQuantity);
+
+router.post("/cart/clear", verifyToken, clearCart);
 
 module.exports = router;

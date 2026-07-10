@@ -6,14 +6,8 @@ const Cart = require("../models/cart.model");
 const addToCart = async (req, res) => {
     try {
 
-        const { userId, cartItems } = req.body;
-
-        if (!userId) {
-            return res.status(400).json({
-                success: false,
-                message: "User ID is required."
-            });
-        }
+        const userId = req.user.id;
+        const { cartItems } = req.body;
 
         if (!Array.isArray(cartItems) || cartItems.length === 0) {
             return res.status(400).json({
@@ -39,7 +33,7 @@ const addToCart = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: "Item(s) added to cart successfully.",
+            message: "Item(s) added successfully.",
             cart
         });
 
@@ -55,15 +49,18 @@ const addToCart = async (req, res) => {
 
 
 /**
- * Get user's cart
+ * Get Cart
  */
 const getCart = async (req, res) => {
+
     try {
-        const { userId } = req.params;
+
+        const userId = req.user.id;
 
         const cart = await Cart.findOne({ userId });
 
         if (!cart) {
+
             return res.status(200).json({
                 success: true,
                 cart: {
@@ -71,6 +68,7 @@ const getCart = async (req, res) => {
                     cartItems: []
                 }
             });
+
         }
 
         res.status(200).json({
@@ -79,21 +77,26 @@ const getCart = async (req, res) => {
         });
 
     } catch (err) {
+
         res.status(500).json({
             success: false,
             message: err.message
         });
+
     }
+
 };
 
+
 /**
- * Remove item from cart
+ * Remove Item
  */
 const removeFromCart = async (req, res) => {
 
     try {
 
-        const { userId, itemId } = req.body;
+        const userId = req.user.id;
+        const { itemId } = req.body;
 
         const cart = await Cart.findOne({ userId });
 
@@ -129,13 +132,14 @@ const removeFromCart = async (req, res) => {
 
 
 /**
- * Update quantity
+ * Update Quantity
  */
 const updateQuantity = async (req, res) => {
 
     try {
 
-        const { userId, itemId, quantity } = req.body;
+        const userId = req.user.id;
+        const { itemId, quantity } = req.body;
 
         if (quantity < 0) {
 
@@ -180,13 +184,13 @@ const updateQuantity = async (req, res) => {
 
 
 /**
- * Clear cart
+ * Clear Cart
  */
 const clearCart = async (req, res) => {
 
     try {
 
-        const { userId } = req.body;
+        const userId = req.user.id;
 
         const cart = await Cart.findOne({ userId });
 
@@ -219,7 +223,6 @@ const clearCart = async (req, res) => {
     }
 
 };
-
 
 module.exports = {
     addToCart,
