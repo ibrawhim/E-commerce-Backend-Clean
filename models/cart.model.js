@@ -54,7 +54,7 @@ const cartSchema = new Schema({
  * Add item to cart
  * If the item already exists, increase its quantity.
  */
-cartSchema.methods.addItem = async function (item) {
+cartSchema.methods.addItem = function (item) {
     const existingItem = this.cartItems.find(
         cartItem => cartItem.itemId === item.itemId
     );
@@ -64,8 +64,6 @@ cartSchema.methods.addItem = async function (item) {
     } else {
         this.cartItems.push(item);
     }
-
-    return await this.save();
 };
 
 /**

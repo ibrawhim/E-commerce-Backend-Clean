@@ -3,35 +3,47 @@ const Cart = require("../models/cart.model");
 // Add item to cart
 const addToCart = async (req, res) => {
     try {
-        console.log(req.body);
+        const { userId, cartItems } = req.body;
 
-        const { userId, item } = req.body;
+        if (!userId) {
+            return res.status(400).json({
+                success: false,
+                message: "User ID is required."
+            });
+        }
 
-        console.log("userId:", userId);
-        console.log("item:", item);
+        if (!Array.isArray(cartItems) || cartItems.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "No cart items provided."
+            });
+        }
 
         let cart = await Cart.findOne({ userId });
 
         if (!cart) {
             cart = new Cart({
                 userId,
-                cartItems: [],
+                cartItems: []
             });
         }
 
-        await cart.addItem(item);
+        cartItems.forEach(item => {
+            cart.addItem(item);
+        });
+
+        await cart.save();
 
         res.status(200).json({
             success: true,
-            message: "Item added to cart.",
-            cart,
+            message: "Item(s) added to cart successfully.",
+            cart
         });
 
     } catch (err) {
-        console.log(err);
         res.status(500).json({
             success: false,
-            message: err.message,
+            message: err.message
         });
     }
 };
