@@ -25,10 +25,10 @@ router.get("/cart", verifyToken, getCart);
 
 router.post("/cart/addtocart", verifyToken, addToCart);
 
-router.post("/cart/remove", verifyToken, removeFromCart);
+router.patch("/cart/update", verifyToken, updateQuantity);
 
-router.post("/cart/update", verifyToken, updateQuantity);
+router.delete("/cart/remove/:itemId", verifyToken, removeFromCart);
 
-router.post("/cart/clear", verifyToken, clearCart);
+router.delete("/cart/clear", verifyToken, clearCart);
 
 module.exports = router;

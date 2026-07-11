@@ -135,6 +135,8 @@ const removeFromCart = async (req, res) => {
  * Update Quantity
  */
 const updateQuantity = async (req, res) => {
+    console.log("User ID:", req.user.id);
+    console.log("Request Body:", req.body);
 
     try {
 
