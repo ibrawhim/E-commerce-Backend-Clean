@@ -92,21 +92,17 @@ const getCart = async (req, res) => {
  * Remove Item
  */
 const removeFromCart = async (req, res) => {
-
     try {
-
         const userId = req.user.id;
-        const { itemId } = req.body;
+        const { itemId } = req.params;
 
         const cart = await Cart.findOne({ userId });
 
         if (!cart) {
-
             return res.status(404).json({
                 success: false,
                 message: "Cart not found."
             });
-
         }
 
         cart.removeItem(itemId);
@@ -120,16 +116,12 @@ const removeFromCart = async (req, res) => {
         });
 
     } catch (err) {
-
         res.status(500).json({
             success: false,
             message: err.message
         });
-
     }
-
 };
-
 
 /**
  * Update Quantity
