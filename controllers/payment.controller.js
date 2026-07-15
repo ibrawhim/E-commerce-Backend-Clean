@@ -39,20 +39,20 @@ const initializePayment = async (req, res) => {
 
         // Initialize Paystack transaction
         const response = await axios.post(
-            "https://api.paystack.co/transaction/initialize",
-            {
-                email,
-                amount: Math.round(totalPrice * 100), // Kobo
-                reference
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-                    "Content-Type": "application/json"
-                }
-            }
-        );
-
+    "https://api.paystack.co/transaction/initialize",
+    {
+        email,
+        amount: Math.round(totalPrice * 100),
+        reference,
+        callback_url: "https://enaijaacommerce.onrender.com/payment/success"
+    },
+    {
+        headers: {
+            Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+            "Content-Type": "application/json"
+        }
+    }
+);
         return res.status(200).json({
             success: true,
             message: "Payment initialized successfully.",
