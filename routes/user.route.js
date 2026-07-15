@@ -16,19 +16,50 @@ const {
 
 const verifyToken = require("../middlewares/auth.middleware");
 
-// Authentication
+/*
+|--------------------------------------------------------------------------
+| Authentication Routes
+|--------------------------------------------------------------------------
+*/
+
 router.post("/signup", signupController);
+
 router.post("/signin", signinController);
 
-// Cart
-router.get("/cart", verifyToken, getCart);
+/*
+|--------------------------------------------------------------------------
+| Cart Routes
+|--------------------------------------------------------------------------
+*/
 
-router.post("/cart/addtocart", verifyToken, addToCart);
+router.get(
+    "/cart",
+    verifyToken,
+    getCart
+);
 
-router.patch("/cart/update", verifyToken, updateQuantity);
+router.post(
+    "/cart/addtocart",
+    verifyToken,
+    addToCart
+);
 
-router.delete("/cart/remove/:itemId", verifyToken, removeFromCart);
+router.patch(
+    "/cart/update",
+    verifyToken,
+    updateQuantity
+);
 
-router.delete("/cart/clear", verifyToken, clearCart);
+router.delete(
+    "/cart/remove/:itemId",
+    verifyToken,
+    removeFromCart
+);
+
+router.delete(
+    "/cart/clear",
+    verifyToken,
+    clearCart
+);
 
 module.exports = router;
