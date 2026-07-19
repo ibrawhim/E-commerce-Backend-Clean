@@ -10,6 +10,7 @@ const cors = require("cors");
 const PORT = process.env.PORT || 5000;
 
 // Routes
+const addressRoute = require("./routes/address.route");
 const userRoute = require("./routes/user.route");
 const paymentRoute = require("./routes/payment.route");
 const orderRoute = require("./routes/order.route");
@@ -27,6 +28,8 @@ app.use("/", userRoute);
 app.use("/", paymentRoute);
 
 app.use("/", orderRoute);
+
+app.use("/", addressRoute);
 
 // Health Check
 app.get("/", (req, res) => {

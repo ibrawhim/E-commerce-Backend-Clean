@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require("uuid");
 
 const Cart = require("../models/cart.model");
 const Order = require("../models/order.model");
+const Address = require("../models/address.model");
 
 /**
  * Initialize Paystack Payment
@@ -34,25 +35,26 @@ const initializePayment = async (req, res) => {
             0
         );
 
-        // Generate a unique transaction reference
+        // Generate transaction reference
         const reference = `ENAIJA-${userId}-${uuidv4()}`;
 
-        // Initialize Paystack transaction
+        // Initialize payment
         const response = await axios.post(
-    "https://api.paystack.co/transaction/initialize",
-    {
-        email,
-        amount: Math.round(totalPrice * 100),
-        reference,
-        callback_url: "https://enaijaacommerce.onrender.com/payment/success"
-    },
-    {
-        headers: {
-            Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-            "Content-Type": "application/json"
-        }
-    }
-);
+            "https://api.paystack.co/transaction/initialize",
+            {
+                email,
+                amount: Math.round(totalPrice * 100),
+                reference,
+                callback_url: "https://enaijaacommerce.onrender.com/payment/success"
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+                    "Content-Type": "application/json"
+                }
+            }
+        );
+
         return res.status(200).json({
             success: true,
             message: "Payment initialized successfully.",
@@ -81,10 +83,7 @@ const verifyPayment = async (req, res) => {
 
         const userId = req.user.id;
 
-        const {
-            reference,
-            shippingAddress
-        } = req.body;
+        const { reference } = req.body;
 
         if (!reference) {
             return res.status(400).json({
@@ -93,10 +92,13 @@ const verifyPayment = async (req, res) => {
             });
         }
 
-        if (!shippingAddress) {
+        // Get user's saved address
+        const address = await Address.findOne({ userId });
+
+        if (!address) {
             return res.status(400).json({
                 success: false,
-                message: "Shipping address is required."
+                message: "Please save your delivery address before completing payment."
             });
         }
 
@@ -129,7 +131,7 @@ const verifyPayment = async (req, res) => {
             });
         }
 
-        // Calculate totals from cart
+        // Calculate totals
         const totalItems = cart.cartItems.reduce(
             (sum, item) => sum + item.quantity,
             0
@@ -140,7 +142,7 @@ const verifyPayment = async (req, res) => {
             0
         );
 
-        // Verify amount matches cart total
+        // Verify amount
         if (payment.amount !== Math.round(totalPrice * 100)) {
             return res.status(400).json({
                 success: false,
@@ -148,7 +150,7 @@ const verifyPayment = async (req, res) => {
             });
         }
 
-        // Prevent duplicate orders for the same payment reference
+        // Prevent duplicate orders
         const existingOrder = await Order.findOne({
             paymentReference: payment.reference
         });
@@ -166,7 +168,19 @@ const verifyPayment = async (req, res) => {
             orderItems: cart.cartItems,
             totalItems,
             totalPrice,
-            shippingAddress,
+
+            shippingAddress: {
+                firstName: address.firstName,
+                lastName: address.lastName,
+                email: address.email,
+                phone: address.phone,
+                country: address.country,
+                state: address.state,
+                city: address.city,
+                address: address.address,
+                zip: address.zip
+            },
+
             paymentMethod: "Paystack",
             paymentReference: payment.reference,
             paymentStatus: "Paid",
