@@ -45,7 +45,7 @@ const initializePayment = async (req, res) => {
                 email,
                 amount: Math.round(totalPrice * 100),
                 reference,
-                callback_url: "https://enaijaacommerce.onrender.com/payment/success"
+                callback_url: "https://e-commerce-backend-clean.vercel.app/payment/success"
             },
             {
                 headers: {
