@@ -49,17 +49,19 @@ const getAddress = async (req, res) => {
         if (!address) {
             return res.status(200).json({
                 success: true,
+                message: "No saved address found.",
                 address: null
             });
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
+            message: "Address retrieved successfully.",
             address
         });
 
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: err.message
         });
