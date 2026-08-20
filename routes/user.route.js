@@ -3,7 +3,8 @@ const router = express.Router();
 
 const {
     signupController,
-    signinController
+    signinController,
+    becomeSeller
 } = require("../controllers/userInfos.controller");
 
 const {
@@ -16,15 +17,20 @@ const {
 
 const verifyToken = require("../middlewares/auth.middleware");
 
-/*
-|--------------------------------------------------------------------------
-| Authentication Routes
-|--------------------------------------------------------------------------
-*/
+
 
 router.post("/signup", signupController);
 
 router.post("/signin", signinController);
+
+/**
+ * Become Seller
+ */
+router.patch(
+    "/become-seller",
+    verifyToken,
+    becomeSeller
+);
 
 /*
 |--------------------------------------------------------------------------

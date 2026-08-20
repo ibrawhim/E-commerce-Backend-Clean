@@ -3,33 +3,29 @@ const app = express();
 
 require("dotenv").config({ quiet: true });
 
-require("./connections/mongodb.connection");
+require("../connections/mongodb.connection");
 
 const cors = require("cors");
 
-const PORT = process.env.PORT || 5000;
-
 // Routes
-const addressRoute = require("./routes/address.route");
-const userRoute = require("./routes/user.route");
-const paymentRoute = require("./routes/payment.route");
-const orderRoute = require("./routes/order.route");
+const addressRoute = require("../routes/address.route");
+const userRoute = require("../routes/user.route");
+const paymentRoute = require("../routes/payment.route");
+const orderRoute = require("../routes/order.route");
+const productRoute = require("../routes/product.route");
 
 // Middleware
 app.use(cors());
 
 app.use(express.urlencoded({ extended: true }));
-
 app.use(express.json());
 
 // Routes
 app.use("/", userRoute);
-
 app.use("/", paymentRoute);
-
 app.use("/", orderRoute);
-
 app.use("/", addressRoute);
+app.use("/", productRoute);
 
 // Health Check
 app.get("/", (req, res) => {
@@ -47,6 +43,4 @@ app.use((req, res) => {
     });
 });
 
-app.listen(PORT, () => {
-    console.log(`🚀 Server is running on port ${PORT}`);
-});
+module.exports = app;
