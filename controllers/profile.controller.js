@@ -1,4 +1,5 @@
 const signupModel = require("../models/signup.model");
+const jwt = require("jsonwebtoken");
 
 /**
  * Get logged-in user's profile
@@ -38,6 +39,7 @@ const getProfile = async (req, res) => {
  */
 const updateProfile = async (req, res) => {
     try {
+
         const userId = req.user.id;
 
         const {
@@ -45,6 +47,9 @@ const updateProfile = async (req, res) => {
             lastName,
             email
         } = req.body;
+
+        console.log("User ID:", userId);
+        console.log("Update body:", req.body);
 
         const user = await signupModel.findById(userId);
 
@@ -55,17 +60,21 @@ const updateProfile = async (req, res) => {
             });
         }
 
+        // Update first name
         if (firstName !== undefined) {
             user.firstName = firstName;
         }
 
+        // Update last name
         if (lastName !== undefined) {
             user.lastName = lastName;
         }
 
+        // Update email
         if (email !== undefined) {
+
             const existingUser = await signupModel.findOne({
-                email,
+                email: email,
                 _id: { $ne: userId }
             });
 
@@ -81,17 +90,35 @@ const updateProfile = async (req, res) => {
 
         await user.save();
 
-        const userData = user.toObject();
+        // Get the updated user directly from database
+        const updatedUser = await signupModel
+            .findById(userId)
+            .select("-password");
 
-        delete userData.password;
+        // Generate new token with updated information
+        const token = jwt.sign(
+            {
+                id: updatedUser._id,
+                email: updatedUser.email,
+                role: updatedUser.role
+            },
+            process.env.SECRET,
+            {
+                expiresIn: "24h"
+            }
+        );
 
         return res.status(200).json({
             success: true,
             message: "Profile updated successfully.",
-            data: userData
+            data: updatedUser,
+            token
         });
 
     } catch (err) {
+
+        console.log("Profile update error:", err);
+
         return res.status(500).json({
             success: false,
             message: err.message
