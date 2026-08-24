@@ -38,7 +38,7 @@ const getProfile = async (req, res) => {
  * PATCH /profile
  */
 const updateProfile = async (req, res) => {
-    console.log("User ID:", userId);
+    // console.log("User ID:", userId);
     console.log("Update body:", req.body);
     try {
 
