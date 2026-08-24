@@ -13,7 +13,7 @@ const userRoute = require("../routes/user.route");
 const paymentRoute = require("../routes/payment.route");
 const orderRoute = require("../routes/order.route");
 const productRoute = require("../routes/product.route");
-
+const profileRoute = require("../routes/profile.route");
 // Middleware
 app.use(cors());
 
@@ -26,6 +26,7 @@ app.use("/", paymentRoute);
 app.use("/", orderRoute);
 app.use("/", addressRoute);
 app.use("/", productRoute);
+app.use("/", profileRoute);
 
 // Health Check
 app.get("/", (req, res) => {
