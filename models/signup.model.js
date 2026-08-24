@@ -26,7 +26,17 @@ const signupSchema = new Schema(
             required: true,
         },
 
-        role: {
+        phone: {
+        type: String,
+        default: ""
+        },
+        
+        bio: {
+            type: String,
+            maxlength: 500,
+            default: ""
+        },
+          role: {
             type: String,
             enum: ["Customer", "Seller", "Admin"],
             default: "Customer",
