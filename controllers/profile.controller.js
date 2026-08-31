@@ -12,7 +12,7 @@ const jwt = require("jsonwebtoken");
   .findById(req.user.id)
   .select("-password");
 
-  ```
+  
    if (!user) {
        return res.status(404).json({
            success: false,
@@ -25,7 +25,7 @@ const jwt = require("jsonwebtoken");
        message: "Profile retrieved successfully.",
        data: user
    });
-  ```
+  
 
   } catch (err) {
   return res.status(500).json({
@@ -44,7 +44,7 @@ const jwt = require("jsonwebtoken");
   try {
   const userId = req.user.id;
 
-  ```
+  
    const {
        firstName,
        lastName,
@@ -124,17 +124,17 @@ const jwt = require("jsonwebtoken");
        data: updatedUser,
        token
    });
-  ```
+  
 
   } catch (err) {
   console.log("Profile update error:", err);
 
-  ```
+  
    return res.status(500).json({
        success: false,
        message: err.message
    });
-  ```
+  
 
   }
   };
