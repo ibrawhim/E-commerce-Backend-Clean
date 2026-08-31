@@ -33,8 +33,8 @@ const signupSchema = new Schema(
         
         bio: {
             type: String,
-            maxlength: 500,
-            default: ""
+            maxlength: 500,  
+            default: "" 
         },
           role: {
             type: String,
