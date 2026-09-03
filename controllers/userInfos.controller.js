@@ -171,6 +171,8 @@ const becomeSeller = async (req, res) => {
 
 };
 
+
+
 module.exports = {
     signupController,
     signinController,

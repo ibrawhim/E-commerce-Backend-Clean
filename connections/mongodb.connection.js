@@ -1,15 +1,47 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+
 const URI = process.env.MONGO_URI;
-const signupModel = require('../models/signup.model');
 
+if (!URI) {
+    throw new Error("MONGO_URI is not defined.");
+}
 
-mongoose.connect(URI)
-    .then(() => {
-        console.log('MongoDB Connected');
-    })
-    .catch((err) => {
-        console.log(err);
-    });
+let cached = global.mongoose;
 
+if (!cached) {
+    cached = global.mongoose = {
+        conn: null,
+        promise: null,
+    };
+}
 
-module.exports = mongoose; 
+const connectDB = async () => {
+    // Already connected
+    if (cached.conn) {
+        return cached.conn;
+    }
+
+    // Connection is already being established
+    if (!cached.promise) {
+        cached.promise = mongoose.connect(URI, {
+            serverSelectionTimeoutMS: 30000,
+            socketTimeoutMS: 45000,
+        });
+    }
+
+    try {
+        cached.conn = await cached.promise;
+
+        console.log("MongoDB Connected");
+
+        return cached.conn;
+    } catch (error) {
+        cached.promise = null;
+
+        console.error("MongoDB connection error:", error);
+
+        throw error;
+    }
+};
+
+module.exports = connectDB;
