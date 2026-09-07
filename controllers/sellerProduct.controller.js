@@ -1,9 +1,38 @@
 const sellerProductModel = require("../models/sellerProduct.model");
+const cloudinary = require("../config/cloudinary");
 
-/**
- * Create a seller product
- * POST /seller/products
- */
+const uploadToCloudinary = (file) => {
+    return new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+            {
+                folder: "seller-products",
+                resource_type: "image"
+            },
+            (error, result) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(result);
+                }
+            }
+        );
+
+        uploadStream.end(file.buffer);
+    });
+};
+
+const uploadImages = async (files) => {
+    if (!files || files.length === 0) {
+        return [];
+    }
+
+    const results = await Promise.all(
+        files.map((file) => uploadToCloudinary(file))
+    );
+
+    return results.map((result) => result.secure_url);
+};
+
 const createSellerProduct = async (req, res) => {
     try {
         const sellerId = req.user.id;
@@ -12,10 +41,17 @@ const createSellerProduct = async (req, res) => {
             title,
             description,
             category,
-            brand,
             price,
             stock,
-            image
+            brand,
+            sku,
+            weight,
+            dimensions,
+            tags,
+            warrantyInformation,
+            shippingInformation,
+            returnPolicy,
+            minimumOrderQuantity
         } = req.body;
 
         if (!title || !description || !category || price === undefined) {
@@ -25,15 +61,49 @@ const createSellerProduct = async (req, res) => {
             });
         }
 
+        let parsedDimensions = {
+            width: 0,
+            height: 0,
+            depth: 0
+        };
+
+        let parsedTags = [];
+
+        try {
+            if (dimensions) {
+                parsedDimensions = JSON.parse(dimensions);
+            }
+
+            if (tags) {
+                parsedTags = JSON.parse(tags);
+            }
+        } catch (error) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid dimensions or tags format."
+            });
+        }
+
+        const imageUrls = await uploadImages(req.files);
+
         const product = await sellerProductModel.create({
             sellerId,
             title,
             description,
             category,
-            brand,
             price,
             stock,
-            image
+            brand,
+            sku,
+            weight,
+            dimensions: parsedDimensions,
+            tags: parsedTags,
+            warrantyInformation,
+            shippingInformation,
+            returnPolicy,
+            minimumOrderQuantity,
+            images: imageUrls,
+            thumbnail: imageUrls.length > 0 ? imageUrls[0] : ""
         });
 
         return res.status(201).json({
@@ -52,11 +122,6 @@ const createSellerProduct = async (req, res) => {
     }
 };
 
-
-/**
- * Get all products belonging to logged-in seller
- * GET /seller/products
- */
 const getSellerProducts = async (req, res) => {
     try {
         const sellerId = req.user.id;
@@ -82,11 +147,6 @@ const getSellerProducts = async (req, res) => {
     }
 };
 
-
-/**
- * Get one seller product
- * GET /seller/products/:productId
- */
 const getSellerProduct = async (req, res) => {
     try {
         const sellerId = req.user.id;
@@ -120,24 +180,38 @@ const getSellerProduct = async (req, res) => {
     }
 };
 
-
-/**
- * Update seller product
- * PATCH /seller/products/:productId
- */
 const updateSellerProduct = async (req, res) => {
     try {
         const sellerId = req.user.id;
         const { productId } = req.params;
 
+        const product = await sellerProductModel.findOne({
+            _id: productId,
+            sellerId
+        });
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found."
+            });
+        }
+
         const {
             title,
             description,
             category,
-            brand,
             price,
             stock,
-            image
+            brand,
+            sku,
+            weight,
+            dimensions,
+            tags,
+            warrantyInformation,
+            shippingInformation,
+            returnPolicy,
+            minimumOrderQuantity
         } = req.body;
 
         const updateData = {};
@@ -145,12 +219,54 @@ const updateSellerProduct = async (req, res) => {
         if (title !== undefined) updateData.title = title;
         if (description !== undefined) updateData.description = description;
         if (category !== undefined) updateData.category = category;
-        if (brand !== undefined) updateData.brand = brand;
         if (price !== undefined) updateData.price = price;
         if (stock !== undefined) updateData.stock = stock;
-        if (image !== undefined) updateData.image = image;
+        if (brand !== undefined) updateData.brand = brand;
+        if (sku !== undefined) updateData.sku = sku;
+        if (weight !== undefined) updateData.weight = weight;
+        if (warrantyInformation !== undefined) {
+            updateData.warrantyInformation = warrantyInformation;
+        }
+        if (shippingInformation !== undefined) {
+            updateData.shippingInformation = shippingInformation;
+        }
+        if (returnPolicy !== undefined) {
+            updateData.returnPolicy = returnPolicy;
+        }
+        if (minimumOrderQuantity !== undefined) {
+            updateData.minimumOrderQuantity = minimumOrderQuantity;
+        }
 
-        const product = await sellerProductModel.findOneAndUpdate(
+        if (dimensions !== undefined) {
+            try {
+                updateData.dimensions = JSON.parse(dimensions);
+            } catch (error) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid dimensions format."
+                });
+            }
+        }
+
+        if (tags !== undefined) {
+            try {
+                updateData.tags = JSON.parse(tags);
+            } catch (error) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid tags format."
+                });
+            }
+        }
+
+        if (req.files && req.files.length > 0) {
+            const imageUrls = await uploadImages(req.files);
+
+            updateData.images = imageUrls;
+            updateData.thumbnail = imageUrls[0];
+        }
+
+        const updatedProduct = await sellerProductModel.findOneAndUpdate(
             {
                 _id: productId,
                 sellerId
@@ -164,17 +280,10 @@ const updateSellerProduct = async (req, res) => {
             }
         );
 
-        if (!product) {
-            return res.status(404).json({
-                success: false,
-                message: "Product not found."
-            });
-        }
-
         return res.status(200).json({
             success: true,
             message: "Product updated successfully.",
-            data: product
+            data: updatedProduct
         });
 
     } catch (err) {
@@ -187,11 +296,6 @@ const updateSellerProduct = async (req, res) => {
     }
 };
 
-
-/**
- * Delete seller product
- * DELETE /seller/products/:productId
- */
 const deleteSellerProduct = async (req, res) => {
     try {
         const sellerId = req.user.id;
@@ -224,7 +328,6 @@ const deleteSellerProduct = async (req, res) => {
     }
 };
 
-
 module.exports = {
     createSellerProduct,
     getSellerProducts,
@@ -232,3 +335,4 @@ module.exports = {
     updateSellerProduct,
     deleteSellerProduct
 };
+
