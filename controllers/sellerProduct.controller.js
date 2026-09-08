@@ -335,11 +335,70 @@ const deleteSellerProduct = async (req, res) => {
     }
 };
 
+
+const getMarketplaceProducts = async (req, res) => {
+    try {
+        const products = await sellerProductModel
+            .find()
+            .populate("sellerId", "firstName lastName")
+            .sort({ createdAt: -1 });
+
+        const formattedProducts = products.map((product) => ({
+            _id: product._id,
+            title: product.title,
+            description: product.description,
+            category: product.category,
+            price: product.price,
+            stock: product.stock,
+            brand: product.brand,
+            sku: product.sku,
+            weight: product.weight,
+            dimensions: product.dimensions,
+            tags: product.tags,
+            warrantyInformation: product.warrantyInformation,
+            shippingInformation: product.shippingInformation,
+            availabilityStatus:
+                product.stock > 0 ? "In Stock" : "Out of Stock",
+            returnPolicy: product.returnPolicy,
+            minimumOrderQuantity: product.minimumOrderQuantity,
+            images: product.images,
+            thumbnail: product.thumbnail,
+            seller: product.sellerId
+                ? {
+                    _id: product.sellerId._id,
+                    firstName: product.sellerId.firstName,
+                    lastName: product.sellerId.lastName
+                }
+                : null,
+            createdAt: product.createdAt,
+            updatedAt: product.updatedAt
+        }));
+
+        return res.status(200).json({
+            success: true,
+            message: "Marketplace products retrieved successfully.",
+            totalProducts: formattedProducts.length,
+            data: formattedProducts
+        });
+
+    } catch (err) {
+        console.error("Get marketplace products error:", err);
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to retrieve marketplace products."
+        });
+    }
+};
+
+
 module.exports = {
     createSellerProduct,
     getSellerProducts,
     getSellerProduct,
     updateSellerProduct,
-    deleteSellerProduct
+    deleteSellerProduct,
+    getMarketplaceProducts
 };
+
 
