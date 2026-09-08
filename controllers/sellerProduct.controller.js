@@ -113,13 +113,20 @@ const createSellerProduct = async (req, res) => {
         });
 
     } catch (err) {
-        console.error("Create seller product error:", err);
+    console.error("Create seller product error:", err);
 
-        return res.status(500).json({
+    if (err.code === 11000 && err.keyPattern?.sku) {
+        return res.status(409).json({
             success: false,
-            message: "Unable to create product."
+            message: "This SKU is already in use. Please use a unique SKU."
         });
     }
+
+    return res.status(500).json({
+        success: false,
+        message: "Unable to create product. Please try again."
+    });
+}
 };
 
 const getSellerProducts = async (req, res) => {
