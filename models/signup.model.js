@@ -6,51 +6,57 @@ const signupSchema = new Schema(
     {
         firstName: {
             type: String,
-            required: true,
-
+            required: true
         },
-
         lastName: {
             type: String,
-            required: true,
+            required: true
         },
-
         email: {
             type: String,
             required: true,
-            unique: true,
+            unique: true
         },
-
         password: {
             type: String,
-            required: true,
+            default: null
         },
-
+        googleId: {
+            type: String,
+            unique: true,
+            sparse: true
+        },
+        authProvider: {
+            type: String,
+            enum: ["local", "google"],
+            default: "local"
+        },
         phone: {
-        type: String,
-        default: ""
+            type: String,
+            default: ""
         },
-        
         bio: {
             type: String,
-            maxlength: 500,  
-            default: "" 
+            maxlength: 500,
+            default: ""
         },
-          role: {
+        role: {
             type: String,
             enum: ["Customer", "Seller", "Admin"],
-            default: "Customer",
-        },
+            default: "Customer"
+        }
     },
     {
-        timestamps: true,
+        timestamps: true
     }
 );
 
 const saltRounds = 10;
 
 signupSchema.pre("save", async function () {
-    if (!this.isModified("password")) return;
+    if (!this.isModified("password") || !this.password) {
+        return;
+    }
 
     try {
         const hashedPassword = await bcrypt.hash(
@@ -64,10 +70,11 @@ signupSchema.pre("save", async function () {
     }
 });
 
-signupSchema.methods.validatePassword = function (
-    password,
-    callback
-) {
+signupSchema.methods.validatePassword = function (password, callback) {
+    if (!this.password) {
+        return callback(null, false);
+    }
+
     bcrypt.compare(
         password,
         this.password,
@@ -81,9 +88,6 @@ signupSchema.methods.validatePassword = function (
     );
 };
 
-const signupModel = mongoose.model(
-    "signup",
-    signupSchema
-);
+const signupModel = mongoose.model("signup", signupSchema);
 
 module.exports = signupModel;

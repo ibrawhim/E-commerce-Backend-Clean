@@ -16,6 +16,7 @@ const orderRoute = require("../routes/order.route");
 const productRoute = require("../routes/product.route");
 const profileRoute = require("../routes/profile.route");
 const sellerProductRoute = require("../routes/sellerProduct.route");
+const googleAuthRoute = require("../routes/googleAuth.route");
 
 // Middleware
 app.use(cors());
@@ -50,6 +51,8 @@ app.use("/", productRoute);
 app.use("/", profileRoute);
 
 app.use("/", sellerProductRoute);
+
+app.use("/", googleAuthRoute);
 
 // Health Check
 app.get("/", (req, res) => {
